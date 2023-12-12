@@ -10,7 +10,10 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-
+- task: UseJavaVersion@0
+  inputs:
+    version: '11'
+- script: 'mvn clean install'
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
