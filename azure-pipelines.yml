@@ -2,33 +2,31 @@
 # Build your Java project and run tests with Apache Maven.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
-
 trigger:
-- master
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: '11'
-    addToPath: true
+jobs:
+- job: Build
+  displayName: 'Build Job'
+  steps:
 
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    goals: 'clean install'
-    options: '-X'
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'clean package'
+      options: '-X'
 
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(System.DefaultWorkingDirectory)/path/to/your/artifacts'
-    Contents: '**/*'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/artifacts'
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)/target'
+      Contents: '**/*.jar'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/drop'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
-    artifactName: 'MyJavaApp'
-    publishLocation: 'Container'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/drop'
+      artifactName: 'MyJavaApp'
+      publishLocation: 'Container'
